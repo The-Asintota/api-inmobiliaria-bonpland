@@ -6,9 +6,9 @@ import os
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [config('URL_TEST'), config('URL_SERVER')]
 
-CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = [config('URL_SERVER')]
 
 
 # Database
