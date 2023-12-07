@@ -12,5 +12,6 @@ RUN pip install -r requirements.txt
 RUN mkdir -p static/ && chmod -R 755 static/
 
 CMD [ "sh", "-c", "python manage.py migrate && \
+                python manage.py loaddata properties && \
                 python manage.py collectstatic --noinput --clear && \
                 gunicorn backend.wsgi" ]
