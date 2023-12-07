@@ -25,13 +25,17 @@ La estructura del proyecto es la siguiente:
     └── requirements.txt
     └── 📁services
         └── __init__.py
+    └── 📁test
+        └── __init__.py
 ```
 
 Esta estructura representa la organización de los archivos y directorios del proyecto. El directorio _src_ es el directorio raíz del proyecto. Contiene el directorio _backend_ para la configuración general de toda la API y el directorio de _services_ para las aplicaciones Django.
 
 El directorio _backend_ es el núcleo de la aplicación y contiene la configuración de Django, las configuraciones de URL y las aplicaciones WSGI y ASGI. El directorio de configuración dentro del backend se divide en diferentes configuraciones para diferentes entornos (base, local, producción).
 
-El directorio de _services_ contiene las aplicaciones Django que contendrán la lógica empresarial y los puntos finales. Internamente, el árbol de archivos de cada aplicación sigue los principios de una arquitectura en capas. Esta separación de preocupaciones permite una mejor mantenibilidad y escalabilidad del código, ya que los cambios en una capa no afectan a las demás.
+El directorio _services_ contiene las aplicaciones Django que contendrán la lógica empresarial y los puntos finales. Internamente, el árbol de archivos de cada aplicación sigue los principios de una arquitectura en capas. Esta separación de preocupaciones permite una mejor mantenibilidad y escalabilidad del código, ya que los cambios en una capa no afectan a las demás.
+
+El directorio _test_ contendrá las pruebas unitarias necesarias para cada aplicación Django o servicios de la API.
 
 El script _manage.py_ se utiliza para administrar el proyecto Django, incluidas tareas como migraciones de bases de datos y el inicio del servidor. El archivo _requirements.txt_ enumera las dependencias de Python necesarias para el proyecto, lo que garantiza que todos los paquetes necesarios estén instalados para que la aplicación se ejecute correctamente.
 
