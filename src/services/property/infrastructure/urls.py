@@ -1,4 +1,7 @@
 from django.urls import path
+from .views import SearchPropertyAPIView
 
 
-urlpatterns = []
+urlpatterns = [
+    path('search/', SearchPropertyAPIView.as_view(), name='search_property'),
+]

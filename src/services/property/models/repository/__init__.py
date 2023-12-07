@@ -1,0 +1,1 @@
+from .search_repository import SearchRepository
