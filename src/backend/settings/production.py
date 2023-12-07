@@ -27,3 +27,9 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join('app', 'static')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# Cors settings
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = [config('URL_TEST')]
