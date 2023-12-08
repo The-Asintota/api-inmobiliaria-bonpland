@@ -8,7 +8,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [config('URL_TEST'), config('URL_SERVER')]
 
-CSRF_TRUSTED_ORIGINS = [config('URL_SERVER')]
+CSRF_TRUSTED_ORIGINS = [f'https://{config("URL_SERVER")}']
 
 
 # Database
