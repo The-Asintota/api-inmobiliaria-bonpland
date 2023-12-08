@@ -6,7 +6,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from ..serializers import QueryParamsSerializer, PropertySerializer
 from services.property.aplication import SearchProperty
-
+from services.property.schemas import search_properties_schema
 
 class SearchPropertyAPIView(generics.ListAPIView):
     """
@@ -55,6 +55,7 @@ class SearchPropertyAPIView(generics.ListAPIView):
             content_type='application/json',
         )
     
+    @search_properties_schema
     def get(self, request:Request, *args, **kwargs) -> Response:
         """
         Handles GET requests. Validates the request data and returns the properties if valid, else returns an error.

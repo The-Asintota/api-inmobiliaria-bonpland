@@ -1,0 +1,1 @@
+from .search_view_schema import search_properties_schema
