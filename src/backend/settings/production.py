@@ -32,13 +32,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Cors settings
 CORS_ORIGIN_ALLOW_ALL = False
 
-CORS_ORIGIN_WHITELIST = [config('URL_TEST')]
+CORS_ORIGIN_WHITELIST = [f'https://{config("URL_TEST")}']
 
 
 # drf-spectacular settings
 SPECTACULAR_SETTINGS['SERVERS'] = [
     {
-        'url':f'{config("URL_SERVER")}/',
+        'url':f'https://{config("URL_SERVER")}/',
         'description':'FL0 Server'
     }
 ]
