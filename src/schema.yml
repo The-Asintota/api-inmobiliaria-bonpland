@@ -1,0 +1,276 @@
+openapi: 3.0.3
+info:
+  title: Inmobiliaria Bonpland API
+  version: 1.0.0
+  description: Esta guía está diseñada para brindarle toda la información que necesita
+    para interactuar con nuestra API de manera efectiva. Nuestro objetivo es fomentar
+    una experiencia positiva para todos los usuarios de la documentación, incluidos
+    los desarrolladores, los tomadores de decisiones y los observadores.
+paths:
+  /api/v1/search/:
+    get:
+      operationId: api_v1_search_list
+      description: |
+        Busca inmuebles en el sistema según los _filtros de busqueda_ permitidos.
+      parameters:
+      - in: query
+        name: all
+        schema:
+          type: boolean
+        description: Este filtro de búsqueda se utiliza cuando quieres obtener todos
+          los registros de un tipo de inmueble.
+      - in: query
+        name: availability_type
+        schema:
+          type: array
+          items:
+            type: string
+        description: |-
+          Este filtro de búsqueda se usa para definir la disponibilidad de un inmueble., los valores posibles son:
+           - Compra.
+           - Alquiler temporal.
+           - Alquiler.
+      - in: query
+        name: bathrooms
+        schema:
+          type: array
+          items:
+            type: string
+        description: |-
+          Filtro de búsqueda para definir el número de baños del inmueble, los calores posibles son:
+           - [1, 2, 3, 4, 5, 0_5].
+
+           bathrooms=1  ==>  Exactamente un baño.
+
+           bathrooms=0_5  ==>  Más de cinco baños.
+      - in: query
+        name: floors
+        schema:
+          type: array
+          items:
+            type: string
+        description: |-
+          Filtro de búsquedapara definir el número de pisos del inmueble, los calores posibles son:
+           - [1, 2, 3, 4, 5, 0_5].
+
+           floors=1  ==>  Exactamente un piso.
+
+           floors=0_5  ==>  Más de cinco pisos.
+      - in: query
+        name: garages
+        schema:
+          type: boolean
+        description: Este filtro se usa para determinar si un inmueble debe tener
+          cochera o no.
+      - in: query
+        name: garden
+        schema:
+          type: boolean
+        description: Este filtro se usa para determinar si un inmueble debe tener
+          un jardín o no.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Un número de página dentro del conjunto de resultados paginados.
+      - in: query
+        name: parking_lot
+        schema:
+          type: boolean
+        description: Este filtro de búsqueda se utiliza para definir si un local tiene
+          acceso a parqueadero.
+      - in: query
+        name: price_usd
+        schema:
+          type: string
+        description: |
+          Este filtro se usa para determinar el precio o rango de precios en el que debe estar un inmueble.:
+          1. **Consulta en rango:**
+            - price_usd=min_max  ==>  price_usd=0_150.50  ==>  Mayor a 150.50 dólares.
+            - price_usd=min_max  ==>  price_usd=589_0  ==>  Menor a 589 dólares.
+            - price_usd=min_max  ==>  price_usd=489.55_600.99  ==>  Entre 489.55 y 600.99 dólares.
+          2. **Consulta exacta:**
+            - price_usd=value  ==>  price_usd=1540.80
+      - in: query
+        name: rooms
+        schema:
+          type: array
+          items:
+            type: string
+        description: |-
+          Filtro de búsqueda para definir el número de habitaciones del inmueble, los calores posibles son:
+           - [1, 2, 3, 4, 5, 0_5].
+
+           rooms=1  ==>  Exactamente una habitción.
+
+           rooms=0_5  ==>  Más de cinco habitaciones.
+      - in: query
+        name: type_local
+        schema:
+          type: array
+          items:
+            type: string
+        description: |-
+          Este filtro de búsqueda se usa para definir el tipo de local, los valores posibles son:
+           - Comercial.
+           - Industrial.
+      - in: query
+        name: type_property
+        schema:
+          type: array
+          items:
+            type: string
+        description: |-
+          Define sobre que tipo de inmueble se van aplicar los filtros de búsqueda, los valores possibles son:
+           - Casa.
+           - Local.
+           - Departamento.
+        required: true
+      tags:
+      - Inmuebles
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPropertieList'
+          description: (OK) Retorna la lista de inmuebles que cumplen con los filtros
+            de busqueda aplicados.
+        '404':
+          description: (NOT_FOUND) No se encontraron inmuebles que cumplan con los
+            filtros aplicados.
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code_error:
+                    type: string
+                    example: invalid_path_params
+                  details:
+                    type: object
+                    properties:
+                      bathrooms:
+                        type: object
+                        properties:
+                          '0':
+                            type: array
+                            items:
+                              type: string
+                            example:
+                            - El valor ingresado no es un número entero.
+          description: |
+            (BAD_REQUEST) La petición no es válida por alguna de las siguientes razones:
+            - Parámetros de consulta inválidos.
+components:
+  schemas:
+    FeaturesPropertie:
+      type: object
+      properties:
+        availability_type:
+          type: string
+          default: Compra
+        rooms:
+          type: integer
+          default: 3
+        bathrooms:
+          type: integer
+          default: 2
+        floors:
+          type: integer
+          default: 2
+        ambient:
+          type: object
+          additionalProperties: {}
+          default:
+            count: 2
+            list:
+            - Ambiente 1
+            - Ambiente 2
+        rules:
+          type: object
+          additionalProperties: {}
+          default:
+            count: 3
+            list:
+            - Regla 1
+            - Regla 2
+            - Regla 3
+        location:
+          type: string
+          default: Mar del Plata 7655, Buenos Aires
+        garage:
+          type: integer
+          default: 2
+        garden:
+          type: boolean
+          default: false
+        extra_services:
+          type: object
+          additionalProperties: {}
+          default:
+            count: 2
+            list:
+            - Servicio 1
+            - Servicio 2
+        covered_meters:
+          type: integer
+          default: 200
+        discovered_meters:
+          type: integer
+          default: 240
+        price_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          default: '100.55'
+    PaginatedPropertieList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Propertie'
+    Propertie:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          default: c7970c98-00c5-40fa-8587-f261c866e4a2
+        short_description:
+          type: string
+          default: Apartamento de 2 dormitorios en el centro de la ciudad.
+        long_description:
+          type: string
+          default: Este encantador apartamento de 2 dormitorios se encuentra en una
+            ubicación privilegiada en el corazón de la ciudad. Con una cocina moderna
+            y totalmente equipada, una amplia sala de estar llena de luz natural y
+            dos acogedoras habitaciones, este inmueble ofrece comodidad y estilo.
+            Disfruta de vistas panorámicas desde las ventanas y acceso a comodidades
+            adicionales, como un gimnasio en el edificio. Esta es una oportunidad
+            excepcional para experimentar la vida urbana en su máxima expresión.
+        type_property:
+          type: string
+          default: Casa
+        features:
+          $ref: '#/components/schemas/FeaturesPropertie'
+      required:
+      - features
+tags:
+- name: Inmuebles
+  description: Comprende todos los _endpoints_ que gestionan todas las funcionalidades
+    relacionadas con un inmueble de la plataforma.

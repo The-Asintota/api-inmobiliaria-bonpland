@@ -29,6 +29,7 @@ LOCAL_APPS = [
 THIRD_APPS = [
     'rest_framework',
     'corsheaders',
+    'drf_spectacular',
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
@@ -102,6 +103,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # DRF settings
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+}
+
+
+# drf-spectacular settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Inmobiliaria Bonpland API',
+    'DESCRIPTION': 'Esta guía está diseñada para brindarle toda la información que necesita para interactuar con nuestra API de manera efectiva. Nuestro objetivo es fomentar una experiencia positiva para todos los usuarios de la documentación, incluidos los desarrolladores, los tomadores de decisiones y los observadores.',
+    'VERSION': '1.0.0',
+    'TAGS':[
+        {
+        'name':'Inmuebles',
+        'description':'Comprende todos los _endpoints_ que gestionan todas las funcionalidades relacionadas con un inmueble de la plataforma.'
+        }
+    ],
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
 }
