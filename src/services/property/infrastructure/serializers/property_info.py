@@ -1,5 +1,6 @@
 from typing import Any, Dict
 from rest_framework import serializers
+from services.property.models.constants import PropertyType
 
 
 class PropertySerializer(serializers.Serializer):
@@ -19,3 +20,27 @@ class PropertySerializer(serializers.Serializer):
             'features':instance,
         }
         return data
+
+
+class GetPropertySerializer(serializers.Serializer):
+    """
+    Validate the data necessary to obtain a property.
+    """
+    
+    pk=serializers.UUIDField(
+        error_messages={
+            'invalid':'Invalid property id.',
+        },
+        required=True,
+    )
+    type_property=serializers.ChoiceField(
+        choices=[
+            (PropertyType.HOME.value, PropertyType.HOME.value),
+            (PropertyType.DEPARTMENT.value, PropertyType.DEPARTMENT.value),
+            (PropertyType.LOCAL.value, PropertyType.LOCAL.value),
+        ],
+        error_messages={
+            'invalid_choice':'Type property is not a valid choice.'
+        },
+        required=True,
+    )

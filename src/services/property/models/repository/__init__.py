@@ -1,1 +1,2 @@
 from .search_repository import SearchRepository
+from .property_repository import PropertyRepository

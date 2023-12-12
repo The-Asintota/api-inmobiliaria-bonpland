@@ -1,1 +1,2 @@
 from .search_view import SearchPropertyAPIView
+from .get_property_view import GetPropertyAPIView
