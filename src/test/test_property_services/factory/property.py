@@ -5,6 +5,7 @@ from services.property.models.constants import (
     PropertyType, AvailabilityType, LocalType
 )
 from faker import Faker
+from decimal import Decimal
 import random
 
 
@@ -16,10 +17,10 @@ class PropertyFactory:
     It supports creating data for three types of properties: Home, Department, and Local.
     """
     
-    fake=Faker('es_CO')
-    model_home=Home
-    model_department=Department
-    model_local=Local
+    _fake=Faker('es_CO')
+    _model_home=Home
+    _model_department=Department
+    _model_local=Local
     availability_type_values=[
         AvailabilityType.BUY.value,
         AvailabilityType.RENT.value,
@@ -29,6 +30,26 @@ class PropertyFactory:
         LocalType.INDUSTRIAL.value,
     ]
 
+    
+    @property
+    def fake(self):
+        return self._fake
+    
+    
+    @property
+    def model_home(self):
+        return self._model_home
+    
+    
+    @property
+    def model_department(self):
+        return self._model_department
+    
+    
+    @property
+    def model_local(self):
+        return self._model_local
+    
     
     def _prices_for_homes(self, availability_type:str) -> float:
         """
@@ -107,9 +128,9 @@ class PropertyFactory:
                 ],
                 num_rows=1
             ),
-            'covered_meters':round(random.uniform(0.01, 99.99), 2),
-            'discovered_meters':round(random.uniform(0.01, 99.99), 2),
-            'price_usd':self._prices_for_homes(availability_type)
+            'covered_meters':Decimal(round(random.uniform(0.01, 99.99), 2)),
+            'discovered_meters':Decimal(round(random.uniform(0.01, 99.99), 2)),
+            'price_usd':Decimal(self._prices_for_homes(availability_type))
         }
     
     
@@ -142,7 +163,7 @@ class PropertyFactory:
                 num_rows=1
             ),
             'location':self.fake.address(),
-            'covered_meters':round(random.uniform(0.01, 99.99), 2),
+            'covered_meters':Decimal(round(random.uniform(0.01, 99.99), 2)),
             'extra_services':self.fake.json(
                 data_columns=[
                     ('count','pyint',{'min_value':0, 'max_value':9}),
@@ -157,7 +178,7 @@ class PropertyFactory:
                 ],
                 num_rows=1
             ),
-            'price_usd':self._prices_for_departments(availability_type)
+            'price_usd':Decimal(self._prices_for_departments(availability_type))
         }
     
     
@@ -190,7 +211,7 @@ class PropertyFactory:
             'parking_lot':self.fake.pybool(),
             'location':self.fake.address(),
             'location_in':self.fake.address(),
-            'price_usd':self._prices_for_locals(availability_type)
+            'price_usd':Decimal(self._prices_for_locals(availability_type))
         }
     
     
@@ -209,19 +230,39 @@ class PropertyFactory:
     
     def create_test_data(self) -> None:
         """
-        Create test data for all types of properties. This method generates and saves 20 instances for each property type.
+        Create test data for all types of properties. This method generates and save instances for each property type.
         """
         
-        total=20
-        i=1
-        while i <= total:
-            data_home=self.get_data_home()
-            model=self.get_model_instance(PropertyType.HOME.value)
-            model.objects.create(**data_home)
-            data_department=self.get_data_department()
-            model=self.get_model_instance(PropertyType.DEPARTMENT.value)
-            model.objects.create(**data_department)
-            data_local=self.get_data_local()
-            model=self.get_model_instance(PropertyType.LOCAL.value)
-            model.objects.create(**data_local)
-            i+=1
+        data_home=self.get_data_home()
+        model=self.get_model_instance(PropertyType.HOME.value)
+        model.objects.create(**data_home)
+        data_department=self.get_data_department()
+        model=self.get_model_instance(PropertyType.DEPARTMENT.value)
+        model.objects.create(**data_department)
+        data_local=self.get_data_local()
+        model=self.get_model_instance(PropertyType.LOCAL.value)
+        model.objects.create(**data_local)
+    
+    
+    def create_home_instance(self, data:Dict[str, Any]) -> Model:
+        """
+        Create a home instance.
+        """
+        
+        return self.model_home.objects.create(**data)
+    
+    
+    def create_department_instance(self, data:Dict[str, Any]) -> Model:
+        """
+        Create a department instance.
+        """
+        
+        return self.model_department.objects.create(**data)
+    
+    
+    def create_local_instance(self, data:Dict[str, Any]) -> Model:
+        """
+        Create a local instance.
+        """
+        
+        return self.model_local.objects.create(**data)
