@@ -13,8 +13,10 @@ class Department(base_property.BaseProperties):
         default=PropertyType.DEPARTMENT.value,
         max_length=25,
     )
-    covered_meters=models.IntegerField(
+    covered_meters=models.DecimalField(
         db_column='covered_meters',
+        max_digits=5,
+        decimal_places=2,
         null=False,
         blank=False,
     )
