@@ -30,13 +30,17 @@ class Home(base_property.BaseProperties):
         null=False,
         blank=False,
     )
-    covered_meters=models.IntegerField(
+    covered_meters=models.DecimalField(
         db_column='covered_meters',
+        max_digits=5,
+        decimal_places=2,
         null=False,
         blank=False,
     )
-    discovered_meters=models.IntegerField(
+    discovered_meters=models.DecimalField(
         db_column='discovered_meters',
+        max_digits=5,
+        decimal_places=2,
         null=False,
         blank=False,
     )
