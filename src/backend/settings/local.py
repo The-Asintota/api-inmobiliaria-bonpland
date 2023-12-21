@@ -13,6 +13,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'mongo_db': {
+        'NAME': config('MONGO_DB_NAME'),
+        'HOST': config('MONGO_DB_HOST'),
+        'PORT': int(config('MONGO_DB_PORT')),
     }
 }
 
