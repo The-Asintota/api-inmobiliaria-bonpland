@@ -1,3 +1,1 @@
-from .department import Department
-from .home import Home
-from .local import Local
+from .properties import Properties
