@@ -109,6 +109,10 @@ REST_FRAMEWORK = {
 }
 
 
+# Properties collection
+PROPERTY_COLLECTION = 'properties'
+
+
 # drf-spectacular settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Inmobiliaria Bonpland API',
