@@ -12,12 +12,12 @@ class SearchProperty:
     - field_types: dict a dictionary mapping field names to their types.
     """
     
-    repository_class=SearchRepository()
+    repository_class=SearchRepository
     field_types={
         **{field:'str' for field in QueryParams.STR_FIELDS.value},
         **{field:'integer' for field in QueryParams.INTEGER_FIELDS.value},
         **{field:'boolean' for field in QueryParams.BOOLEAN_FIELDS.value},
-        **{field:'price' for field in QueryParams.PRICE_FIELDS.value},
+        **{field:'decimal' for field in QueryParams.DECIMAL_FIELDS.value},
     }
     
     def _process_field(self, field_type:str, value_list:List[str]) -> Dict[str, Any]:
@@ -45,7 +45,7 @@ class SearchProperty:
                 'type_query': 'exact',
                 'value': value_list[0],
             }
-        elif field_type == 'price':
+        elif field_type == 'decimal':
             min_value, max_value = map(float, value_list[0].split('_'))
             if min_value != 0 and max_value != 0:
                 return {
@@ -81,6 +81,5 @@ class SearchProperty:
         """
         
         return self.repository_class.search(
-            search_in=filters.pop('type_property'),
             filters=self._process_filters(filters),
         )
