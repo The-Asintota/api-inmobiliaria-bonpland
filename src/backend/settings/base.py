@@ -24,6 +24,7 @@ BASE_APPS = [
 
 LOCAL_APPS = [
     'services.property',
+    'services.user',
 ]
 
 THIRD_APPS = [
