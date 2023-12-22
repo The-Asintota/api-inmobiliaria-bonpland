@@ -1,1 +1,2 @@
 from .search_view_schema import search_properties_schema
+from .get_property_view_schema import get_property_schema
