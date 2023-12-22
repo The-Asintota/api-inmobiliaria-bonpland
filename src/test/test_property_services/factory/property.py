@@ -1,57 +1,41 @@
 from typing import Dict, Any
-from django.db.models import Model
-from services.property.models import Home, Department, Local
 from services.property.models.constants import (
     PropertyType, AvailabilityType, LocalType
 )
+from bson import ObjectId, Decimal128
+from datetime import datetime
 from faker import Faker
-from decimal import Decimal
 import random
+import pytz
+
+
+fake = Faker('es_CO')
 
 
 class PropertyFactory:
     """
-    A factory class for creating property data for testing purposes.
+    A `factory class` for creating property data for testing purposes.
 
-    This class uses the Faker library to generate fake data and the random library to generate random choices and prices.
-    It supports creating data for three types of properties: Home, Department, and Local.
+    This class uses the `Faker` library to generate fake data and the `random` library to generate random choices.
     """
     
-    _fake=Faker('es_CO')
-    _model_home=Home
-    _model_department=Department
-    _model_local=Local
-    availability_type_values=[
+    AVAILABILITY_TYPE_VALUES = [
         AvailabilityType.BUY.value,
         AvailabilityType.RENT.value,
     ]
-    type_local_values=[
+    TYPE_LOCAL_VALUES = [
         LocalType.COMERCIAL.value,
         LocalType.INDUSTRIAL.value,
     ]
-
+    OBJECT_FIELD = {
+        'count':2,
+        'list': [
+            '1', '2'
+        ]
+    }
     
-    @property
-    def fake(self):
-        return self._fake
-    
-    
-    @property
-    def model_home(self):
-        return self._model_home
-    
-    
-    @property
-    def model_department(self):
-        return self._model_department
-    
-    
-    @property
-    def model_local(self):
-        return self._model_local
-    
-    
-    def _prices_for_homes(self, availability_type:str) -> float:
+    @classmethod
+    def __prices_for_homes(cls, availability_type:str) -> float:
         """
         Generate a random price for a home based on its availability type.
         """
@@ -63,8 +47,8 @@ class PropertyFactory:
         elif availability_type == AvailabilityType.TEMPORARY_RENTAL.value:
             return round(random.uniform(200.00, 1000.00), 2)
     
-    
-    def _prices_for_departments(self, availability_type:str) -> float:
+    @classmethod
+    def __prices_for_departments(cls, availability_type:str) -> float:
         """
         Generate a random price for a department based on its availability type.
         """
@@ -76,8 +60,8 @@ class PropertyFactory:
         elif availability_type == AvailabilityType.TEMPORARY_RENTAL.value:
             return round(random.uniform(2000.00, 4000.00), 2)
     
-    
-    def _prices_for_locals(self, availability_type:str) -> float:
+    @classmethod
+    def __prices_for_locals(cls, availability_type:str) -> float:
         """
         Generate a random price for a local based on its availability type.
         """
@@ -89,180 +73,94 @@ class PropertyFactory:
         elif availability_type == AvailabilityType.TEMPORARY_RENTAL.value:
             return round(random.uniform(2000.00, 4000.00), 2)
     
-    
-    def get_data_home(self) -> Dict[str, Any]:
+    @classmethod
+    def get_data_home(cls, pk: str=None) -> Dict[str, Any]:
         """
         Generate a dictionary of fake data for a home.
         """
         
-        availability_type=random.choice(self.availability_type_values)
+        availability_type=random.choice(cls.AVAILABILITY_TYPE_VALUES)
         return {
-            'short_description':self.fake.text(max_nb_chars=50),
-            'long_description':self.fake.text(max_nb_chars=200),
+            'pk':ObjectId(pk) if pk else ObjectId(),
+            'short_description':fake.text(max_nb_chars=50),
+            'long_description':fake.text(max_nb_chars=200),
             'type_property':PropertyType.HOME.value,
             'availability_type':availability_type,
             'rooms':random.choice([3, 4, 5]),
             'bathrooms':random.choice([1, 2]),
             'floors':random.choice([1, 2, 3]),
-            'ambient':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'rules':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'location':self.fake.address(),
+            'ambient':cls.OBJECT_FIELD,
+            'rules':cls.OBJECT_FIELD,
+            'location':fake.address(),
             'garages':False,
             'garden':False,
-            'extra_services':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'covered_meters':Decimal(round(random.uniform(0.01, 99.99), 2)),
-            'discovered_meters':Decimal(round(random.uniform(0.01, 99.99), 2)),
-            'price_usd':Decimal(self._prices_for_homes(availability_type))
+            'extra_services':cls.OBJECT_FIELD,
+            'covered_meters':Decimal128(str(round(random.uniform(0.01, 99.99), 2))),
+            'discovered_meters':Decimal128(str(round(random.uniform(0.01, 99.99), 2))),
+            'price_usd':Decimal128(str(cls.__prices_for_homes(availability_type))),
+            'date_joined':datetime.now(tz=pytz.UTC)
         }
     
-    
-    def get_data_department(self) -> Dict[str, Any]:
+    @classmethod
+    def get_data_department(cls, pk: str=None) -> Dict[str, Any]:
         """
         Generate a dictionary of fake data for a department.
         """
         
-        availability_type=random.choice(self.availability_type_values)
+        availability_type=random.choice(cls.AVAILABILITY_TYPE_VALUES)
         return {
-            'short_description':self.fake.text(max_nb_chars=50),
-            'long_description':self.fake.text(max_nb_chars=200),
+            'pk':ObjectId(pk) if pk else ObjectId(),
+            'short_description':fake.text(max_nb_chars=50),
+            'long_description':fake.text(max_nb_chars=200),
             'type_property':PropertyType.DEPARTMENT.value,
             'availability_type':availability_type,
             'rooms':random.choice([2, 3, 4]),
             'bathrooms':random.choice([1, 2]),
             'floors':random.choice([1, 2, 3]),
-            'ambient':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'rules':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'location':self.fake.address(),
-            'covered_meters':Decimal(round(random.uniform(0.01, 99.99), 2)),
-            'extra_services':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'building_services':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'price_usd':Decimal(self._prices_for_departments(availability_type))
+            'ambient':cls.OBJECT_FIELD,
+            'rules':cls.OBJECT_FIELD,
+            'location':fake.address(),
+            'covered_meters':Decimal128(str(round(random.uniform(0.01, 99.99), 2))),
+            'extra_services':cls.OBJECT_FIELD,
+            'building_services':cls.OBJECT_FIELD,
+            'price_usd':Decimal128(str(cls.__prices_for_departments(availability_type))),
+            'date_joined':datetime.now(tz=pytz.UTC)
         }
     
-    
-    def get_data_local(self) -> Dict[str, Any]:
+    @classmethod
+    def get_data_local(cls, pk: str=None) -> Dict[str, Any]:
         """
         Generate a dictionary of fake data for a local.
         """
         
-        availability_type=random.choice(self.availability_type_values)
+        availability_type=random.choice(cls.AVAILABILITY_TYPE_VALUES)
         return {
-            'short_description':self.fake.text(max_nb_chars=50),
-            'long_description':self.fake.text(max_nb_chars=200),
+            'pk':ObjectId(pk) if pk else ObjectId(),
+            'short_description':fake.text(max_nb_chars=50),
+            'long_description':fake.text(max_nb_chars=200),
             'type_property':PropertyType.LOCAL.value,
             'availability_type':availability_type,
-            'type_local':random.choice(self.type_local_values),
-            'extra_services':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'use':self.fake.json(
-                data_columns=[
-                    ('count','pyint',{'min_value':0, 'max_value':9}),
-                    ('list',[])
-                ],
-                num_rows=1
-            ),
-            'parking_lot':self.fake.pybool(),
-            'location':self.fake.address(),
-            'location_in':self.fake.address(),
-            'price_usd':Decimal(self._prices_for_locals(availability_type))
+            'type_local':random.choice(cls.TYPE_LOCAL_VALUES),
+            'extra_services':cls.OBJECT_FIELD,
+            'use':cls.OBJECT_FIELD,
+            'parking_lot':fake.pybool(),
+            'location':fake.address(),
+            'location_in':fake.address(),
+            'price_usd':Decimal128(str(cls.__prices_for_locals(availability_type))),
+            'date_joined':datetime.now(tz=pytz.UTC)
         }
     
-    
-    def get_model_instance(self, type_property:str) -> Model:
-        """
-        Get the model class for a given property type.
-        """
-        
-        models={
-            PropertyType.HOME.value:self.model_home,
-            PropertyType.DEPARTMENT.value:self.model_department,
-            PropertyType.LOCAL.value:self.model_local
+    @classmethod
+    def get_data(cls, pk: str=None) -> Dict[str, Any]:
+        map_funcion = {
+            PropertyType.HOME.value: lambda pk: cls.get_data_home(pk),
+            PropertyType.DEPARTMENT.value: lambda pk: cls.get_data_department(pk),
+            PropertyType.LOCAL.value: lambda pk: cls.get_data_local(pk),
         }
-        return models.get(type_property)
-    
-    
-    def create_test_data(self) -> None:
-        """
-        Create test data for all types of properties. This method generates and save instances for each property type.
-        """
-        
-        data_home=self.get_data_home()
-        model=self.get_model_instance(PropertyType.HOME.value)
-        model.objects.create(**data_home)
-        data_department=self.get_data_department()
-        model=self.get_model_instance(PropertyType.DEPARTMENT.value)
-        model.objects.create(**data_department)
-        data_local=self.get_data_local()
-        model=self.get_model_instance(PropertyType.LOCAL.value)
-        model.objects.create(**data_local)
-    
-    
-    def create_home_instance(self, data:Dict[str, Any]) -> Model:
-        """
-        Create a home instance.
-        """
-        
-        return self.model_home.objects.create(**data)
-    
-    
-    def create_department_instance(self, data:Dict[str, Any]) -> Model:
-        """
-        Create a department instance.
-        """
-        
-        return self.model_department.objects.create(**data)
-    
-    
-    def create_local_instance(self, data:Dict[str, Any]) -> Model:
-        """
-        Create a local instance.
-        """
-        
-        return self.model_local.objects.create(**data)
+        type_property = random.choice([
+            PropertyType.HOME.value,
+            PropertyType.DEPARTMENT.value,
+            PropertyType.LOCAL.value,
+        ])
+        pk = pk if pk else None
+        return map_funcion[type_property](pk)
