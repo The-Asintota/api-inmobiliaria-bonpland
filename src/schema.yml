@@ -7,18 +7,58 @@ info:
     una experiencia positiva para todos los usuarios de la documentación, incluidos
     los desarrolladores, los tomadores de decisiones y los observadores.
 paths:
-  /api/v1/search/:
+  /api/v1/property/{id}/:
     get:
-      operationId: api_v1_search_list
-      description: |
-        Busca inmuebles en el sistema según los _filtros de busqueda_ permitidos.
+      operationId: api_v1_property_retrieve
+      description: _Obtiene toda la información_ de un inmueble en el sistema según
+        su id.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Identificador unico de un inmueble.
+        required: true
+      tags:
+      - Inmuebles
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+          description: (OK) Retorna la información del inmueble solicitado.
+        '404':
+          description: (NOT_FOUND) No se encontraron inmuebles que cumplan con los
+            filtros aplicados.
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code_error:
+                    type: string
+                    example: invalid_id
+                  details:
+                    type: object
+                    properties:
+                      pk:
+                        type: string
+                        example: Invalid ObjectId format.
+          description: |-
+            (BAD_REQUEST) La petición no es válida por alguna de las siguientes razones:
+            - Id inválido.
+  /api/v1/property/search/:
+    get:
+      operationId: api_v1_property_search_list
+      description: Busca inmuebles en el sistema según los _filtros de busqueda_ permitidos.
       parameters:
       - in: query
         name: all
         schema:
           type: boolean
-        description: Este filtro de búsqueda se utiliza cuando quieres obtener todos
-          los registros de un tipo de inmueble.
+        description: Este filtro de búsqueda se usa para obtener todos los inmuebles
+          activos en el sistema.
       - in: query
         name: availability_type
         schema:
@@ -26,7 +66,7 @@ paths:
           items:
             type: string
         description: |-
-          Este filtro de búsqueda se usa para definir la disponibilidad de un inmueble., los valores posibles son:
+          Este filtro de búsqueda se usa para definir la disponibilidad de un inmueble, los valores posibles son:
            - Compra.
            - Alquiler temporal.
            - Alquiler.
@@ -37,7 +77,7 @@ paths:
           items:
             type: string
         description: |-
-          Filtro de búsqueda para definir el número de baños del inmueble, los calores posibles son:
+          Este filtro de búsqueda se usa para definir el número de baños del inmueble, los valores posibles son:
            - [1, 2, 3, 4, 5, 0_5].
 
            bathrooms=1  ==>  Exactamente un baño.
@@ -50,7 +90,7 @@ paths:
           items:
             type: string
         description: |-
-          Filtro de búsquedapara definir el número de pisos del inmueble, los calores posibles son:
+          Este filtro de búsqueda se usa para definir el número de pisos del inmueble, los valores posibles son:
            - [1, 2, 3, 4, 5, 0_5].
 
            floors=1  ==>  Exactamente un piso.
@@ -77,14 +117,14 @@ paths:
         name: parking_lot
         schema:
           type: boolean
-        description: Este filtro de búsqueda se utiliza para definir si un local tiene
-          acceso a parqueadero.
+        description: Este filtro de búsqueda se usa para determinar si un local debe
+          tener acceso a parqueadero o no.
       - in: query
         name: price_usd
         schema:
           type: string
-        description: |
-          Este filtro se usa para determinar el precio o rango de precios en el que debe estar un inmueble.:
+        description: |-
+          Este filtro se usa para determinar el precio o rango de precios en el que debe estar un inmueble:
           1. **Consulta en rango:**
             - price_usd=min_max  ==>  price_usd=0_150.50  ==>  Mayor a 150.50 dólares.
             - price_usd=min_max  ==>  price_usd=589_0  ==>  Menor a 589 dólares.
@@ -98,7 +138,7 @@ paths:
           items:
             type: string
         description: |-
-          Filtro de búsqueda para definir el número de habitaciones del inmueble, los calores posibles son:
+          Este filtro de búsqueda se usa para definir el número de habitaciones del inmueble, los valores posibles son:
            - [1, 2, 3, 4, 5, 0_5].
 
            rooms=1  ==>  Exactamente una habitción.
@@ -121,11 +161,10 @@ paths:
           items:
             type: string
         description: |-
-          Define sobre que tipo de inmueble se van aplicar los filtros de búsqueda, los valores possibles son:
+          Este filtro de búsqueda se usa para determinar el tipo de inmuble que se desea buscar, los valores possibles son:
            - Casa.
            - Local.
            - Departamento.
-        required: true
       tags:
       - Inmuebles
       responses:
@@ -133,7 +172,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedPropertieList'
+                $ref: '#/components/schemas/PaginatedPropertiesList'
           description: (OK) Retorna la lista de inmuebles que cumplen con los filtros
             de busqueda aplicados.
         '404':
@@ -158,15 +197,85 @@ paths:
                             items:
                               type: string
                             example:
-                            - El valor ingresado no es un número entero.
+                            - Invalid path params.
           description: |
             (BAD_REQUEST) La petición no es válida por alguna de las siguientes razones:
             - Parámetros de consulta inválidos.
 components:
   schemas:
-    FeaturesPropertie:
+    PaginatedPropertiesList:
       type: object
       properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Properties'
+    Properties:
+      type: object
+      properties:
+        pk:
+          type: string
+          default: c7970c98-00c5-40fa-8587-f261c866e4a2
+        short_description:
+          type: string
+          default: Apartamento de 2 dormitorios en el centro de la ciudad.
+        type_property:
+          type: string
+          default: Casa
+        availability_type:
+          type: string
+          default: Compra
+        rooms:
+          type: integer
+          default: 3
+        bathrooms:
+          type: integer
+          default: 2
+        floors:
+          type: integer
+          default: 2
+        location:
+          type: string
+          default: Mar del Plata 7655, Buenos Aires
+        covered_meters:
+          type: integer
+          default: 200
+        discovered_meters:
+          type: integer
+          default: 240
+        price_usd:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          default: '100.55'
+    Property:
+      type: object
+      properties:
+        pk:
+          type: string
+          default: c7970c98-00c5-40fa-8587-f261c866e4a2
+        short_description:
+          type: string
+          default: Apartamento de 2 dormitorios en el centro de la ciudad.
+        long_description:
+          type: string
+          default: Apartamento de 2 dormitorios en el centro de la ciudad.
+        type_property:
+          type: string
+          default: Casa
         availability_type:
           type: string
           default: Compra
@@ -224,52 +333,6 @@ components:
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           default: '100.55'
-    PaginatedPropertieList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Propertie'
-    Propertie:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          default: c7970c98-00c5-40fa-8587-f261c866e4a2
-        short_description:
-          type: string
-          default: Apartamento de 2 dormitorios en el centro de la ciudad.
-        long_description:
-          type: string
-          default: Este encantador apartamento de 2 dormitorios se encuentra en una
-            ubicación privilegiada en el corazón de la ciudad. Con una cocina moderna
-            y totalmente equipada, una amplia sala de estar llena de luz natural y
-            dos acogedoras habitaciones, este inmueble ofrece comodidad y estilo.
-            Disfruta de vistas panorámicas desde las ventanas y acceso a comodidades
-            adicionales, como un gimnasio en el edificio. Esta es una oportunidad
-            excepcional para experimentar la vida urbana en su máxima expresión.
-        type_property:
-          type: string
-          default: Casa
-        features:
-          $ref: '#/components/schemas/FeaturesPropertie'
-      required:
-      - features
 tags:
 - name: Inmuebles
   description: Comprende todos los _endpoints_ que gestionan todas las funcionalidades
