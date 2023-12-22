@@ -1,76 +1,104 @@
 from typing import Dict
-from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-from django.forms.models import model_to_dict
-from services.property.models.constants import PropertyType
-from test.test_property_services.factory import PropertyFactory
+from test.test_property_services import BaseTestCase
+from parameterized import parameterized
+from bson import ObjectId, Decimal128
+from parameterized import parameterized
+from datetime import datetime
 
 
-class TestGetPropertyView(APITestCase):
+class TestGetPropertyView(BaseTestCase):
+    """
+    This class contains unit tests for the `GetPropertyView`. It inherits from the `BaseTestCase` class which sets up the necessary test environment.
 
-    __factory = PropertyFactory()
-
-    @classmethod
-    def setUpTestData(cls) -> None:
-        """
-        Load initial data for the TestCase.
-        """
-
-        cls.home_instance = cls.__factory.create_home_instance(
-            data=cls.__factory.get_data_home()
-        )
-        cls.department_instance = cls.__factory.create_department_instance(
-            data=cls.__factory.get_data_department()
-        )
-        cls.local_instance = cls.__factory.create_local_instance(
-            data=cls.__factory.get_data_local()
-        )
-
-    def test_handle_valid_request(self) -> None:
-        data = [
-            {
-                'pk': self.home_instance.id,
-                'type_property': PropertyType.HOME.value
-            },
-            {
-                'pk': self.department_instance.id,
-                'type_property': PropertyType.DEPARTMENT.value
-            },
-            {
-                'pk': self.local_instance.id,
-                'type_property': PropertyType.LOCAL.value
-            }
-        ]
-        for kwargs in data:
-            # Check response
-            response = self.client.get(reverse('get_property', kwargs=kwargs))
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            
-            # Compare response data with database data
-            property_data: Dict = response.data
-            property_features: Dict = property_data.pop('features')
-            property_data.update(property_features)
-            model = self.__factory.get_model_instance(kwargs['type_property'])
-            property_instance = model_to_dict(model.objects.get(id = kwargs['pk']))
-            self.assertEqual(property_data, property_instance)
+    The tests are divided into three categories:
+    1. Handling valid requests
+    2. Handling invalid requests
+    3. Handling requests for non-existent properties
+    """
     
-    def test_handle_invalid_request(self) -> None:
-        data = [
-            {
-                'pk': '325003-9e04812-bc726449651105',
-                'type_property': PropertyType.HOME.value
-            },
-            {
-                'pk': '325003-9e04812-bc726449651105',
-                'type_property': PropertyType.DEPARTMENT.value
-            },
-            {
-                'pk': '325003-9e04812-bc726449651105',
-                'type_property': PropertyType.LOCAL.value
-            },
+    @parameterized.expand(
+        input=[
+            ({
+                'pk': str(ObjectId()),
+            },),
+            ({
+                'pk': str(ObjectId()),
+            },),
         ]
-        for kwargs in data:
-            # Check response
-            response = self.client.get(reverse('get_property', kwargs=kwargs))
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    )
+    def test_handle_valid_request(self, data: Dict[str, str]) -> None:
+        """
+        This test checks if the GetPropertyView correctly handles `valid requests`. It does this by creating a document with the provided primary key (pk) and then sending a GET request to the view. The response is then checked for the correct status code and data.
+
+        Args:
+        - data (Dict[str, str]) : A dictionary that contains the primary key (pk) of the document that will later be used as an `argument in the path`.
+        """
+        
+        # A document is created with the pk to test
+        self.collection.insert_one(
+            document=self.factory.get_data(pk=data['pk'])
+        )
+        
+        # Check response
+        response = self.client.get(reverse('get_property', kwargs=data))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Compare response data with database data
+        query_data: Dict = self.collection.find_one(
+            filter = {'pk': ObjectId(data['pk'])},
+            projection={'_id': 0}
+        )
+        response_data = response.data
+        for key in query_data.keys():
+            if isinstance(query_data[key], ObjectId):
+                self.assertEqual(response_data[key], str(query_data[key]))
+                continue
+            elif isinstance(query_data[key], Decimal128):
+                self.assertEqual(response_data[key], str(query_data[key].to_decimal()))
+                continue
+            elif isinstance(query_data[key], datetime):
+                self.assertEqual(response_data[key], query_data[key].isoformat())
+                continue
+            self.assertEqual(response_data[key], query_data[key])
+    
+    @parameterized.expand(
+        input=[
+            ({
+                'pk': '325003-9e04812-bc726449651105',
+            },),
+            ({
+                'pk': 'pk',
+            },),
+            ({
+                'pk': 1252584,
+            },),
+            ({
+                'pk': ' ',
+            },),
+            ({
+                'pk': None,
+            },),
+        ]
+    )
+    def test_handle_invalid_request(self, data: Dict[str, str]) -> None:
+        """
+        This test checks if the GetPropertyView correctly handles `invalid requests`. It does this by sending a GET request to the view with invalid data and then checking the response for the correct status code.
+
+        Args:
+        - data (Dict[str, str]) : A dictionary that contains the primary key (pk) of the document that will later be used as an `argument in the path`.
+        """
+        
+        # Check response
+        response = self.client.get(reverse('get_property', kwargs=data))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_handle_not_found_property(self) -> None:
+        """
+        This test checks if the GetPropertyView correctly handles requests for `non-existent properties`. It does this by sending a GET request to the view with a non-existent primary key (pk) and then checking the response for the correct status code.
+        """
+        
+        # Check response
+        response = self.client.get(reverse('get_property', kwargs={'pk': str(ObjectId())}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

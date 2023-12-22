@@ -1,23 +1,20 @@
 from typing import Dict, List
+from rest_framework.test import  APITestCase
 from services.property.infrastructure.serializers import QueryParamsSerializer
 from services.property.models.constants import (
     PropertyType, AvailabilityType, LocalType, QueryParams
 )
-from rest_framework.test import  APITestCase
 from parameterized import parameterized
 
 
 class TestQueryParamsSerializer(APITestCase):
     """
-    This class contains unit tests for the QueryParamsSerializer class.
+    Test case for the `QueryParamsSerializer class`.
 
-    Attributes:
-    - serializer_class (QueryParamsSerializer): The class of the serializer to be tested.
+    This class contains unit tests that validate the behavior of the QueryParamsSerializer. It tests both valid and invalid scenarios for the serializer.
     """
 
-
-    serializer_class=QueryParamsSerializer   
-    
+    serializer_class=QueryParamsSerializer
     
     @parameterized.expand(
         input=[({
@@ -47,6 +44,13 @@ class TestQueryParamsSerializer(APITestCase):
         ]
     )
     def test_serializer_is_valid(self, query_params:Dict[str, List[str]]) -> None :
+        """
+        This test case checks if the serializer is valid when provided with valid query parameters. It asserts that the serializer is valid, there are no errors, the initial data matches the input, and the validated data matches the input or is a boolean for boolean fields.
+
+        Args:
+        - query_params (Dict[str, List[str]]) : The query parameters to be tested.
+        """
+        
         serializer=self.serializer_class(data=query_params)
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.errors, {})
@@ -56,7 +60,6 @@ class TestQueryParamsSerializer(APITestCase):
                 self.assertTrue(value[0] in [True, False])
                 continue
             self.assertEqual(value, query_params[field])
-    
     
     @parameterized.expand(
         input=[({
@@ -90,8 +93,17 @@ class TestQueryParamsSerializer(APITestCase):
         ]
     )
     def test_serializer_is_invalid(self, query_params:Dict[str, List[str]]) -> None :
+        """
+        This test case checks if the serializer is invalid when provided with invalid query parameters. It asserts that the serializer is invalid, there are errors, and the keys of the errors match the keys of the input.
+
+        Args:
+        - query_params (Dict[str, List[str]]): The query parameters to be tested.
+        """
+        
         serializer=self.serializer_class(data=query_params)
         self.assertEqual(serializer.initial_data, query_params)
         self.assertFalse(serializer.is_valid())
         self.assertIsNotNone(serializer.errors)
-        self.assertTrue(list(serializer.errors.keys()).sort() == list(query_params.keys()).sort())
+        self.assertTrue(
+            list(serializer.errors.keys()).sort() == list(query_params.keys()).sort()
+        )

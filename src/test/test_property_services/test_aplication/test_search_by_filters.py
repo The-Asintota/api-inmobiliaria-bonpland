@@ -1,42 +1,45 @@
-from typing import Dict, List
-from services.property.models import Home, Department, Local
-from test.test_property_services import BaseTestCase
+from typing import Dict, List, Any
 from services.property.aplication import SearchProperty
 from services.property.models.constants import (
     PropertyType, AvailabilityType, QueryParams, LocalType
 )
+from test.test_property_services import BaseTestCase
 from parameterized import parameterized
 
 
 class TestSearchProperty(BaseTestCase):
     """
-    This class contains unit tests for the SearchProperty application class.
-
-    Attributes:
-    - aplication_class (SearchProperty): An instance of the SearchProperty class that is being tested.
-    """
+    Test case for the `SearchProperty` application class.
     
+    This class contains methods to test the functionality of the SearchProperty application class. It inherits from the BaseTestCase class.
+    """
     
     aplication_class=SearchProperty()
     
-    
-    def _assert_price_field(self, property_value, param_value:List[str]) -> None:
+    def __assert_price_field(self, property_value: str, param_value: List[str]) -> None:
         """
-        This method checks if the property value is within the specified price range.
+        Asserts that the price field of a property is within the specified range.
+        
+        Args:
+        - property_value (str) : The price of the property.
+        - param_value (List[str]) : The range of acceptable prices.
         """
         
         min_value, max_value = map(float, param_value[0].split('_'))
         if min_value != 0 and max_value != 0:
-            self.assertTrue(min_value <= property_value <= max_value)
+            self.assertTrue(min_value <= float(property_value) <= max_value)
         elif min_value == 0 and max_value != 0:
-            self.assertTrue(property_value >= max_value)
+            self.assertTrue(float(property_value) >= max_value)
         elif min_value != 0 and max_value == 0:
-            self.assertTrue(property_value <= min_value)
+            self.assertTrue(float(property_value) <= min_value)
 
-    
-    def _assert_integer_field(self, property_value:int, param_value:List[str]) -> None:
+    def __assert_integer_field(self, property_value: int, param_value: List[str]) -> None:
         """
-        This method checks if the property value is within the specified integer range.
+        Asserts that an integer field of a property is within the specified range or matches the specified value.
+        
+        Args:
+        - property_value (int) : The value of the property field.
+        - param_value (List[str]) : The range of acceptable values or the specific acceptable value.
         """
         
         for value in param_value:
@@ -46,25 +49,28 @@ class TestSearchProperty(BaseTestCase):
             else:
                 self.assertTrue(str(property_value) in param_value)
     
-    
-    def _assert_property(self, property, query_params:Dict[str, List[str]]) -> None:
+    def __assert_property(self, property: Dict[str, Any], query_params: Dict[str, List[str]]) -> None:
         """
-        This method checks if the property value matches the query parameters.
+        Asserts that a property matches the specified query parameters.
+        
+        Args:
+        - property (Dict[str, Any]) : The property to test.
+        - query_params (Dict[str, List[str]]) : The query parameters to match the property against.
         """
         
         for param_name, param_value in query_params.items():
-            if param_name in QueryParams.PRICE_FIELDS.value:
-                self._assert_price_field(property[param_name], param_value)
+            if param_name in QueryParams.DECIMAL_FIELDS.value:
+                self.__assert_price_field(property[param_name], param_value)
             elif param_name in QueryParams.INTEGER_FIELDS.value:
-                self._assert_integer_field(property[param_name], param_value)
+                self.__assert_integer_field(property[param_name], param_value)
             elif param_name in QueryParams.BOOLEAN_FIELDS.value:
                 self.assertEqual(property[param_name], param_value[0])
             else:
                 self.assertTrue(property[param_name] in param_value)
     
-    
     @parameterized.expand(
-        input=[({
+        input=[
+            ({
                 'type_property': [PropertyType.HOME.value],
                 'availability_type': [AvailabilityType.RENT.value],
                 'rooms': ['3'],
@@ -96,14 +102,21 @@ class TestSearchProperty(BaseTestCase):
             },),
         ],
     )
-    def test_search_in_home_model(self, query_params:Dict[str, List[str]]) -> None:
+    def test_search_home(self, query_params:Dict[str, List[str]]) -> None:
+        """
+        Tests the search functionality for home properties.
+        
+        Args:
+        - query_params (Dict[str, List[str]]) : The query parameters to use for the search.
+        """
+        
         properties = self.aplication_class.get_properties(query_params.copy())
         for property in properties:
-            self._assert_property(property, query_params)
-    
+            self.__assert_property(property, query_params)
     
     @parameterized.expand(
-        input=[({
+        input=[
+            ({
                 'type_property':[PropertyType.DEPARTMENT.value],
                 'availability_type':[AvailabilityType.RENT.value],
                 'rooms':['3', '4'],
@@ -127,14 +140,21 @@ class TestSearchProperty(BaseTestCase):
             },),
         ],
     )
-    def test_search_in_department_model(self, query_params:Dict[str, List[str]]) -> None:
+    def test_search_department(self, query_params:Dict[str, List[str]]) -> None:
+        """
+        Tests the search functionality for department properties.
+        
+        Args:
+        - query_params (Dict[str, List[str]]) : The query parameters to use for the search.
+        """
+        
         properties = self.aplication_class.get_properties(query_params.copy())        
         for property in properties:
-            self._assert_property(property, query_params)
-    
+            self.__assert_property(property, query_params)
     
     @parameterized.expand(
-        input=[({
+        input=[
+            ({
                 'type_property': [PropertyType.LOCAL.value],
                 'type_local':[LocalType.COMERCIAL.value],
                 'availability_type': [AvailabilityType.RENT.value],
@@ -157,14 +177,21 @@ class TestSearchProperty(BaseTestCase):
             },),
         ],
     )
-    def test_search_in_local_model(self, query_params:Dict[str, List[str]]) -> None:
+    def test_search_local(self, query_params:Dict[str, List[str]]) -> None:
+        """
+        Tests the search functionality for local properties.
+        
+        Args:
+        - query_params (Dict[str, List[str]]) : The query parameters to use for the search.
+        """
+        
         properties = self.aplication_class.get_properties(query_params.copy())
         for property in properties:
-            self._assert_property(property, query_params)
-    
+            self.__assert_property(property, query_params)
     
     @parameterized.expand(
-        input=[({
+        input=[
+            ({
                 'type_property':[
                     PropertyType.HOME.value,
                     PropertyType.DEPARTMENT.value,
@@ -184,24 +211,33 @@ class TestSearchProperty(BaseTestCase):
             },),
         ],
     )
-    def test_search_in_multiples_models(self, query_params:Dict[str, List[str]]) -> None:
+    def test_search_multiples_type_properties(self, query_params:Dict[str, List[str]]) -> None:
+        """
+        Tests the search functionality for multiple types of properties.
+        
+        Args:
+        - query_params (Dict[str, List[str]]) : The query parameters to use for the search.
+        """
+        
         properties = self.aplication_class.get_properties(query_params.copy())
         for property in properties:
-            self._assert_property(property, query_params)
-    
+            self.__assert_property(property, query_params)
     
     @parameterized.expand(
-        input=[({
-                'type_property':[
-                    PropertyType.HOME.value,
-                    PropertyType.DEPARTMENT.value,
-                    PropertyType.LOCAL.value,
-                ],
+        input=[
+            ({
                 'all':[True]
             },),
         ],
     )
     def test_get_all_properties(self, query_params:Dict[str, List[str]]) -> None:
-        total=Home.objects.count() + Department.objects.count() + Local.objects.count()
+        """
+        Tests the functionality to get all properties.
+        
+        Args:
+        - query_params (Dict[str, List[str]]) : The query parameters to use for the search.
+        """
+        
+        total=self.collection.count_documents({})
         properties = self.aplication_class.get_properties(query_params)
         self.assertEqual(len(properties), total)
