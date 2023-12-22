@@ -8,14 +8,10 @@ from ..serializers import QueryParamsSerializer, PropertySerializer
 from services.property.aplication import SearchProperty
 from services.property.schemas import search_properties_schema
 
+
 class SearchPropertyAPIView(generics.ListAPIView):
     """
-    API view for searching properties. Inherits from ListAPIView which is a generic class-based view to handle the retrieval of a collection of instances.
-
-    Attributes:
-    - permission_classes: A tuple of permission classes the view should use.
-    - serializer_class: The serializer class to be used.
-    - aplication_class: An instance of the SearchProperty class.
+    API view for `searching properties`. Inherits from ListAPIView which is a generic class-based view to handle the retrieval of a collection of instances.
     """
     
     permission_classes=(permissions.AllowAny,)
@@ -57,10 +53,6 @@ class SearchPropertyAPIView(generics.ListAPIView):
     
     @search_properties_schema
     def get(self, request:Request, *args, **kwargs) -> Response:
-        """
-        Handles GET requests. Validates the request data and returns the properties if valid, else returns an error.
-        """
-        
         request_data=self.serializer_class(data=request.query_params)
         if not request_data.is_valid():
             return self._handle_invalid_request(request_data)

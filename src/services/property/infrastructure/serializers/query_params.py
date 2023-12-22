@@ -19,20 +19,7 @@ def validation_with_regex(regex, message):
 
 class QueryParamsSerializer(serializers.Serializer):
     """
-    Serializer for validating and preparing query parameters.
-    
-    Attributes:
-    - type_property (ListField): The property types to search in.
-    - all (ListField): Boolean field indicating whether to search all properties.
-    - availability_type (ListField): The types of availability to search for.
-    - type_local (ListField): The types of local properties to search for.
-    - parking_lot (ListField): Boolean field indicating whether to search for properties with a parking lot.
-    - price_usd (ListField): The price range to search for properties in.
-    - rooms (ListField): The number of rooms to search for.
-    - bathrooms (ListField): The number of bathrooms to search for.
-    - floors (ListField): The number of floors to search for.
-    - garages (ListField): Boolean field indicating whether to search for properties with a garage.
-    - garden (ListField): Boolean field indicating whether to search for properties with a garden.
+    Serializer for validating and preparing `query parameters`.
     """
     
     type_property=serializers.ListField(
