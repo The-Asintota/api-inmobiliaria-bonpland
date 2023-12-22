@@ -114,6 +114,10 @@ REST_FRAMEWORK = {
 PROPERTY_COLLECTION = 'properties'
 
 
+# Custom User model
+AUTH_USER_MODEL = 'user.Users'
+
+
 # drf-spectacular settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Inmobiliaria Bonpland API',
