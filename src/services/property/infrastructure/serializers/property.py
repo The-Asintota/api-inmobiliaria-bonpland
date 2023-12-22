@@ -4,10 +4,11 @@ from bson import ObjectId
 
 class PropertySerializer(serializers.Serializer):
     """
-    Serializer for a `document` from the properties collection. This serializer is `read-only` and is used to serialize the data of a document property.\n
+    Serializer for a `document` from the properties collection. This serializer is `read-only` and is used to serialize the data of a document property.
+    
     Includes fields for all attributes of a Property.
     """
-    
+
     pk = serializers.CharField(read_only=True)
     type_property = serializers.CharField(read_only=True)
     availability_type = serializers.CharField(read_only=True)
@@ -35,10 +36,11 @@ class PropertySerializer(serializers.Serializer):
 
 class ObjectIdField(serializers.Field):
     """
-    Custom serializer field for handling MongoDB's `ObjectId`. This field is used to convert a string representation of an ObjectId into an actual ObjectId instance.\n
+    Custom serializer field for handling MongoDB's `ObjectId`. This field is used to convert a string representation of an ObjectId into an actual ObjectId instance.
+    
     If the string is not a valid ObjectId, it raises a ValidationError.
     """
-    
+
     def to_internal_value(self, data):
         try:
             return ObjectId(data)
@@ -48,8 +50,9 @@ class ObjectIdField(serializers.Field):
 
 class GetPropertySerializer(serializers.Serializer):
     """
-    Serializer to get a property. This serializer is used to validate the `data needed` to obtain a document from the properties collection.\n
+    Serializer to get a property. This serializer is used to validate the `data needed` to obtain a document from the properties collection.
+    
     Includes a field for the primary key (pk) of the Property, which is required.
     """
-    
-    pk=ObjectIdField(required=True)
+
+    pk = ObjectIdField(required=True)

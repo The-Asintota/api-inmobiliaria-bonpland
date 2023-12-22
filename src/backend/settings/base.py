@@ -118,10 +118,10 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Inmobiliaria Bonpland API',
     'DESCRIPTION': 'Esta guía está diseñada para brindarle toda la información que necesita para interactuar con nuestra API de manera efectiva. Nuestro objetivo es fomentar una experiencia positiva para todos los usuarios de la documentación, incluidos los desarrolladores, los tomadores de decisiones y los observadores.',
     'VERSION': '1.0.0',
-    'TAGS':[
+    'TAGS': [
         {
-        'name':'Inmuebles',
-        'description':'Comprende todos los _endpoints_ que gestionan todas las funcionalidades relacionadas con un inmueble de la plataforma.'
+            'name': 'Inmuebles',
+            'description': 'Comprende todos los _endpoints_ que gestionan todas las funcionalidades relacionadas con un inmueble de la plataforma.'
         }
     ],
     'SERVE_INCLUDE_SCHEMA': False,

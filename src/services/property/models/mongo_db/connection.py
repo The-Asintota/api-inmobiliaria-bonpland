@@ -9,11 +9,11 @@ def db_connection() -> Database:
     
     The environment variables are accessed using the `config` function from the `decouple` module.
     """
-    
+
     try:
         client = MongoClient(
-            host = DATABASES['mongo_db']['HOST'],
-            port = DATABASES['mongo_db']['PORT'],
+            host=DATABASES['mongo_db']['HOST'],
+            port=DATABASES['mongo_db']['PORT'],
         )
         db = client[DATABASES['mongo_db']['NAME']]
     except Exception as e:

@@ -22,7 +22,7 @@ type_local_values = [
     LocalType.INDUSTRIAL.value,
 ]
 objetc_field = {
-    'count':2,
+    'count': 2,
     'list': [
         '1', '2'
     ]
@@ -36,14 +36,14 @@ class Command(BaseCommand):
 
     help = 'Migrate collections.'
 
-    def create_data(self) -> List[Dict[str, Any]]:
+    def __create_data(self) -> List[Dict[str, Any]]:
         """
         Creates a list of dictionaries, each representing a property with randomly generated data.
         """
 
         data = []
         i = 0
-        while i < 20:
+        while i < 30:
             data.append({
                 'pk': ObjectId(),
                 'short_description': fake.text(max_nb_chars=50),
@@ -110,10 +110,10 @@ class Command(BaseCommand):
         """
         Handles the execution of the command. It creates a connection to the MongoDB database, generates the data using the create_data method, and inserts it into the specified collection.
         """
-        
+
         try:
             db = db_connection()
-            db[PROPERTY_COLLECTION].insert_many(self.create_data())
+            db[PROPERTY_COLLECTION].insert_many(self.__create_data())
         except Exception as e:
             db.client.close()
             print(e)

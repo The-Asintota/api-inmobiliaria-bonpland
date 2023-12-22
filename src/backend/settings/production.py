@@ -18,9 +18,9 @@ DATABASES = {
         default=config('POSTGRE_DB_URL')
     ),
     'mongo_db': {
-        'NAME': config('MONGO_DB_NAME'),
-        'HOST': config('MONGO_DB_HOST'),
-        'PORT': int(config('MONGO_DB_PORT')),
+        'NAME': config('MDB_NAME_PRODUCTION'),
+        'HOST': config('MDB_HOST_PRODUCTION'),
+        'PORT': int(config('MDB_PORT_PRODUCTION')),
     }
 }
 
@@ -43,7 +43,7 @@ CORS_ORIGIN_WHITELIST = [f'https://{config("TEST")}']
 # drf-spectacular settings
 SPECTACULAR_SETTINGS['SERVERS'] = [
     {
-        'url':f'https://{config("SERVER_HOST")}/',
-        'description':'FL0 Server'
+        'url': f'https://{config("SERVER_HOST")}/',
+        'description': 'FL0 Server'
     }
 ]

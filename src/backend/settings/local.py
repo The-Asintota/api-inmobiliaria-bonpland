@@ -15,9 +15,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     },
     'mongo_db': {
-        'NAME': config('MONGO_DB_NAME'),
-        'HOST': config('MONGO_DB_HOST'),
-        'PORT': int(config('MONGO_DB_PORT')),
+        'NAME': config('MDB_NAME_LOCAL'),
+        'HOST': config('MDB_HOST_LOCAL'),
+        'PORT': int(config('MDB_PORT_LOCAL')),
     }
 }
 

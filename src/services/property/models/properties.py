@@ -23,7 +23,7 @@ SCHEMA_OBJECT = {
 
 
 class Properties(MongoModel):
-    
+
     name = 'properties'
     schema_validation = {
         "$jsonSchema": {
