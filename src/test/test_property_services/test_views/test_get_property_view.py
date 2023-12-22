@@ -17,7 +17,7 @@ class TestGetPropertyView(BaseTestCase):
     2. Handling invalid requests
     3. Handling requests for non-existent properties
     """
-    
+
     @parameterized.expand(
         input=[
             ({
@@ -35,19 +35,19 @@ class TestGetPropertyView(BaseTestCase):
         Args:
         - data (Dict[str, str]) : A dictionary that contains the primary key (pk) of the document that will later be used as an `argument in the path`.
         """
-        
+
         # A document is created with the pk to test
         self.collection.insert_one(
             document=self.factory.get_data(pk=data['pk'])
         )
-        
+
         # Check response
         response = self.client.get(reverse('get_property', kwargs=data))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         # Compare response data with database data
         query_data: Dict = self.collection.find_one(
-            filter = {'pk': ObjectId(data['pk'])},
+            filter={'pk': ObjectId(data['pk'])},
             projection={'_id': 0}
         )
         response_data = response.data
@@ -56,13 +56,15 @@ class TestGetPropertyView(BaseTestCase):
                 self.assertEqual(response_data[key], str(query_data[key]))
                 continue
             elif isinstance(query_data[key], Decimal128):
-                self.assertEqual(response_data[key], str(query_data[key].to_decimal()))
+                self.assertEqual(response_data[key], str(
+                    query_data[key].to_decimal()))
                 continue
             elif isinstance(query_data[key], datetime):
-                self.assertEqual(response_data[key], query_data[key].isoformat())
+                self.assertEqual(
+                    response_data[key], query_data[key].isoformat())
                 continue
             self.assertEqual(response_data[key], query_data[key])
-    
+
     @parameterized.expand(
         input=[
             ({
@@ -89,16 +91,17 @@ class TestGetPropertyView(BaseTestCase):
         Args:
         - data (Dict[str, str]) : A dictionary that contains the primary key (pk) of the document that will later be used as an `argument in the path`.
         """
-        
+
         # Check response
         response = self.client.get(reverse('get_property', kwargs=data))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_handle_not_found_property(self) -> None:
         """
         This test checks if the GetPropertyView correctly handles requests for `non-existent properties`. It does this by sending a GET request to the view with a non-existent primary key (pk) and then checking the response for the correct status code.
         """
-        
+
         # Check response
-        response = self.client.get(reverse('get_property', kwargs={'pk': str(ObjectId())}))
+        response = self.client.get(
+            reverse('get_property', kwargs={'pk': str(ObjectId())}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

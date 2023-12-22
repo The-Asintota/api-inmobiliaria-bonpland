@@ -21,8 +21,8 @@ class QueryParamsSerializer(serializers.Serializer):
     """
     Serializer for validating and preparing `query parameters`.
     """
-    
-    type_property=serializers.ListField(
+
+    type_property = serializers.ListField(
         child=serializers.ChoiceField(
             choices=[
                 (PropertyType.HOME.value),
@@ -32,11 +32,11 @@ class QueryParamsSerializer(serializers.Serializer):
         ),
         required=True,
     )
-    all=serializers.ListField(
+    all = serializers.ListField(
         child=serializers.BooleanField(),
         required=False,
     )
-    availability_type=serializers.ListField(
+    availability_type = serializers.ListField(
         child=serializers.ChoiceField(
             choices=[
                 (AvailabilityType.BUY.value),
@@ -46,7 +46,7 @@ class QueryParamsSerializer(serializers.Serializer):
         ),
         required=False,
     )
-    type_local=serializers.ListField(
+    type_local = serializers.ListField(
         child=serializers.ChoiceField(
             choices=[
                 (LocalType.COMERCIAL.value),
@@ -55,67 +55,65 @@ class QueryParamsSerializer(serializers.Serializer):
         ),
         required=False,
     )
-    parking_lot=serializers.ListField(
+    parking_lot = serializers.ListField(
         child=serializers.BooleanField(),
         required=False,
     )
-    price_usd=serializers.ListField(
+    price_usd = serializers.ListField(
         child=serializers.CharField(
             max_length=20,
             validators=[validation_with_regex(PRICE_REGEX, INVALID_DATA_MESSAGE)],
         ),
         required=False,
     )
-    rooms=serializers.ListField(
+    rooms = serializers.ListField(
         child=serializers.CharField(
             max_length=3,
             validators=[validation_with_regex(ROOMS_BATHROOMS_FLOORS_REGEX, INVALID_DATA_MESSAGE)],
         ),
         required=False,
     )
-    bathrooms=serializers.ListField(
+    bathrooms = serializers.ListField(
         child=serializers.CharField(
             max_length=3,
             validators=[validation_with_regex(ROOMS_BATHROOMS_FLOORS_REGEX, INVALID_DATA_MESSAGE)],
         ),
         required=False,
     )
-    floors=serializers.ListField(
+    floors = serializers.ListField(
         child=serializers.CharField(
             max_length=3,
             validators=[validation_with_regex(ROOMS_BATHROOMS_FLOORS_REGEX, INVALID_DATA_MESSAGE)],
         ),
         required=False,
     )
-    garages=serializers.ListField(
+    garages = serializers.ListField(
         child=serializers.BooleanField(),
         required=False,
     )
-    garden=serializers.ListField(
+    garden = serializers.ListField(
         child=serializers.BooleanField(),
         required=False,
     )
-    
-    
-    def validate_price_usd(self, value:List[str]) -> Dict[str, Any]:
+
+    def validate_price_usd(self, value: List[str]) -> Dict[str, Any]:
         """
         Validate the price_usd field.
         """
-        
+
         min_value, max_value = map(float, value[0].split('_'))
-        if not  min_value < max_value and min_value != 0 and max_value != 0:
+        if not min_value < max_value and min_value != 0 and max_value != 0:
             raise serializers.ValidationError(
                 detail='Minimum value must be less than maximum value.'
             )
         return value
-    
-    
-    def validate(self, data:Dict[str, Any]) -> Dict[str, Any]:
+
+    def validate(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Validate the query parameters.
         """
-        
-        if len(data)==1:
+
+        if len(data) == 1:
             raise serializers.ValidationError(
                 detail='There must be at least two query parameters.'
             )

@@ -11,7 +11,7 @@ class ClassProperty(property):
     This class extends the built-in `property` class to allow properties to be used with classes
     in addition to instances. This is useful for creating properties on classes (class-level properties), similar to how `@classmethod` creates class-level methods.
     """
-    
+
     def __init__(self, getter):
         self.getter = getter
 
@@ -22,19 +22,19 @@ class ClassProperty(property):
 
 
 class BaseRepository:
-    
+
     @ClassProperty
     def collection(cls):
         raise NotImplementedError(
             f'A name for the collection was not found in the {cls.__name__} class.'
         )
-    
+
     @classmethod
     def set_document(cls, document: Dict[str, Any]) -> Dict[str, Any]:
         """
         Set a value in a document by key.
         """
-        
+
         for key, value in document.items():
             if key in QueryParams.DECIMAL_FIELDS.value:
                 document[key] = str(value.to_decimal())

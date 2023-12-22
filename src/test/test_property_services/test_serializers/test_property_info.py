@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from rest_framework.test import APITestCase
-from services.property.infrastructure.serializers import(
+from services.property.infrastructure.serializers import (
     PropertySerializer, GetPropertySerializer
 )
 from test.test_property_services.factory import PropertyFactory
@@ -30,13 +30,13 @@ class TestPropertySerializer(APITestCase):
         Args:
         - data (Dict[str, Any]) : The data to be validated by the serializer.
         """
-        
+
         # Verify that the serializer validates the data correctly
         serializer = self.serializer_class(data=data)
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.errors, {})
         self.assertEqual(serializer.initial_data, data)
-        
+
         # Verify that the data did not suffer an unexpected modification
         for field, value in serializer.validated_data.items():
             self.assertEqual(value, data[field])
@@ -70,13 +70,13 @@ class TestGetPropertySerializer(APITestCase):
         Args:
         - data (Dict[str, str]) : The data to be validated by the serializer.
         """
-        
+
         # Verify that the serializer validates the data correctly
         serializer = self.serializer_class(data=data)
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.errors, {})
         self.assertEqual(serializer.initial_data, data)
-        
+
         # Verify that the data did not suffer an unexpected modification
         for field, value in serializer.validated_data.items():
             self.assertEqual(str(value), data[field])
@@ -99,7 +99,7 @@ class TestGetPropertySerializer(APITestCase):
         Args:
         - data (Dict[str, str]): The invalid data to be validated by the serializer.
         """
-        
+
         # Verify that the serializer validates the data correctly
         serializer = self.serializer_class(data=data)
         self.assertFalse(serializer.is_valid())

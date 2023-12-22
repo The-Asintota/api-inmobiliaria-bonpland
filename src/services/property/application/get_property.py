@@ -7,13 +7,13 @@ class GetProperty:
     """
     `GetProperty` is a use case that uses the `PropertyRepository` class to retrieve a property based on its `primary key`.
     """
-    
+
     __repository = PropertyRepository
-    
+
     @classmethod
-    def get_property(self, pk: str) -> Optional[Dict[str, Any]]:
+    def get_property(cls, pk: str) -> Optional[Dict[str, Any]]:
         """
         Returns a `property` based on its `primary key`, if the property doesn't exist it returns `None`.
         """
-        
-        return self.__repository.get_property_by_pk(ObjectId(pk))
+
+        return cls.__repository.get_property_by_pk(ObjectId(pk))

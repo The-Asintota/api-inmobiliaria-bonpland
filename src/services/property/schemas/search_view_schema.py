@@ -3,12 +3,12 @@ from drf_spectacular.utils import (
 )
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import serializers
-from services.property.models.constants import(
+from services.property.models.constants import (
     PropertyType, AvailabilityType, LocalType
 )
 
 
-search_properties_schema=extend_schema(
+search_properties_schema = extend_schema(
     description='Busca inmuebles en el sistema según los _filtros de busqueda_ permitidos.',
     tags=['Inmuebles'],
     auth=[],
@@ -19,7 +19,7 @@ search_properties_schema=extend_schema(
             type={
                 'type': 'array',
                 'items': {
-                    'type':'string',
+                    'type': 'string',
                 }
             },
             location=OpenApiParameter.QUERY,
@@ -36,7 +36,7 @@ search_properties_schema=extend_schema(
             type={
                 'type': 'array',
                 'items': {
-                    'type':'string',
+                    'type': 'string',
                 }
             },
             location=OpenApiParameter.QUERY
@@ -47,7 +47,7 @@ search_properties_schema=extend_schema(
             type={
                 'type': 'array',
                 'items': {
-                    'type':'string',
+                    'type': 'string',
                 }
             },
             location=OpenApiParameter.QUERY
@@ -64,7 +64,7 @@ search_properties_schema=extend_schema(
             type={
                 'type': 'array',
                 'items': {
-                    'type':'string'
+                    'type': 'string'
                 }
             },
             location=OpenApiParameter.QUERY
@@ -75,7 +75,7 @@ search_properties_schema=extend_schema(
             type={
                 'type': 'array',
                 'items': {
-                    'type':'string',
+                    'type': 'string',
                 }
             },
             location=OpenApiParameter.QUERY
@@ -86,7 +86,7 @@ search_properties_schema=extend_schema(
             type={
                 'type': 'array',
                 'items': {
-                    'type':'string',
+                    'type': 'string',
                 }
             },
             location=OpenApiParameter.QUERY
@@ -117,7 +117,7 @@ search_properties_schema=extend_schema(
         )
     ],
     responses={
-        200:OpenApiResponse(
+        200: OpenApiResponse(
             description='(OK) Retorna la lista de inmuebles que cumplen con los filtros de busqueda aplicados.',
             response=inline_serializer(
                 name='Properties',
@@ -131,28 +131,28 @@ search_properties_schema=extend_schema(
                     'type_property': serializers.CharField(
                         default=PropertyType.HOME.value
                     ),
-                    "availability_type":serializers.CharField(
+                    "availability_type": serializers.CharField(
                         default=AvailabilityType.BUY.value
                     ),
-                    "rooms":serializers.IntegerField(
+                    "rooms": serializers.IntegerField(
                         default=3
                     ),
-                    "bathrooms":serializers.IntegerField(
+                    "bathrooms": serializers.IntegerField(
                         default=2
                     ),
-                    "floors":serializers.IntegerField(
+                    "floors": serializers.IntegerField(
                         default=2
                     ),
-                    "location":serializers.CharField(
+                    "location": serializers.CharField(
                         default='Mar del Plata 7655, Buenos Aires'
                     ),
-                    "covered_meters":serializers.IntegerField(
+                    "covered_meters": serializers.IntegerField(
                         default=200
                     ),
-                    "discovered_meters":serializers.IntegerField(
+                    "discovered_meters": serializers.IntegerField(
                         default=240
                     ),
-                    "price_usd":serializers.DecimalField(
+                    "price_usd": serializers.DecimalField(
                         max_digits=10,
                         decimal_places=2,
                         min_value=0,
@@ -162,29 +162,29 @@ search_properties_schema=extend_schema(
                 many=True
             )
         ),
-        404:OpenApiResponse(
+        404: OpenApiResponse(
             description='(NOT_FOUND) No se encontraron inmuebles que cumplan con los filtros aplicados.'
         ),
-        400:OpenApiResponse(
+        400: OpenApiResponse(
             description='(BAD_REQUEST) La petición no es válida por alguna de las siguientes razones:\n- Parámetros de consulta inválidos.\n',
             response={
-                "properties":{
-                    "code_error":{
-                        "type":"string",
-                        "example":"invalid_path_params"
+                "properties": {
+                    "code_error": {
+                        "type": "string",
+                        "example": "invalid_path_params"
                     },
-                    "details":{
-                        "type":"object",
-                        "properties":{
-                            "bathrooms":{
-                                "type":"object",
-                                "properties":{
-                                    "0":{
-                                        "type":"array",
-                                        "items":{
-                                            "type":"string"
+                    "details": {
+                        "type": "object",
+                        "properties": {
+                            "bathrooms": {
+                                "type": "object",
+                                "properties": {
+                                    "0": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
                                         },
-                                        "example":[
+                                        "example": [
                                             "Invalid path params."
                                         ]
                                     },

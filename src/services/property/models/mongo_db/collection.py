@@ -10,7 +10,7 @@ class ClassProperty(property):
     This class extends the built-in `property` class to allow properties to be used with classes
     in addition to instances. This is useful for creating properties on classes (class-level properties), similar to how `@classmethod` creates class-level methods.
     """
-    
+
     def __init__(self, getter):
         self.getter = getter
 
@@ -31,7 +31,7 @@ class MongoModel(abc.ABC):
     - schema_validation : The validation schema for the MongoDB collection. Must be overridden in subclasses.
     - indexes : The indexes for the MongoDB collection. Must be overridden in subclasses.
     """
-    
+
     @ClassProperty
     def name(cls):
         raise NotImplementedError(
@@ -49,35 +49,35 @@ class MongoModel(abc.ABC):
         raise NotImplementedError(
             f'Indexes were not found for the {cls.name} collection.'
         )
-    
+
     @classmethod
     def get_collection_refer(cls) -> Collection:
         db = db_connection()
         if cls.name not in db.list_collection_names():
             raise Exception(f'Collection {cls.__name__} does not exist.')
         return db[cls.name]
-    
+
     @classmethod
     def create_collection(cls) -> None:
         """
         Creates a new MongoDB collection with the name defined in the model if it does not exist. It also sets or modifies the validation schema for the collection and creates the indexes.
         """
-        
+
         if not isinstance(cls.name, str):
             raise TypeError(f'{cls.name} must be a string')
         if not isinstance(cls.schema_validation, dict):
             raise TypeError(f'{cls.schema_validation} must be a dictionary')
         if not isinstance(cls.indexes, list):
             raise TypeError(f'{cls.indexes} must be a list')
-        
+
         db = db_connection()
         if cls.name not in db.list_collection_names():
             try:
                 # Create collection if it doesn't exist
                 collection = db.create_collection(
-                    name = cls.name,
-                    validator = cls.schema_validation,
-                    validationLevel = 'strict',
+                    name=cls.name,
+                    validator=cls.schema_validation,
+                    validationLevel='strict',
                 )
                 collection.create_indexes(cls.indexes)
             except Exception as e:
@@ -88,10 +88,10 @@ class MongoModel(abc.ABC):
             try:
                 # Collection updated
                 db.command(
-                    command = 'collMod',
-                    value = cls.name,
-                    validator = cls.schema_validation,
-                    validationLevel = 'strict',
+                    command='collMod',
+                    value=cls.name,
+                    validator=cls.schema_validation,
+                    validationLevel='strict',
                 )
                 db[cls.name].drop_indexes()
                 db[cls.name].create_indexes(cls.indexes)
