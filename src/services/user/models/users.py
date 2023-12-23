@@ -1,4 +1,6 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser, PermissionsMixin, UserManager
+)
 from django.db import models
 from .user_manager import UserCustomManager
 import uuid
@@ -82,7 +84,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
         serialize=False
     )
 
-    objects = UserCustomManager()
+    objects: UserCustomManager = UserCustomManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
