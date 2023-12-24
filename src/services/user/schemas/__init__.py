@@ -1,0 +1,1 @@
+from .register_view_schema import register_user_schema

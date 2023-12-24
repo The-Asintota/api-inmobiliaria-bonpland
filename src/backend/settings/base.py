@@ -127,6 +127,10 @@ SPECTACULAR_SETTINGS = {
         {
             'name': 'Inmuebles',
             'description': 'Comprende todos los _endpoints_ que gestionan todas las funcionalidades relacionadas con un inmueble de la plataforma.'
+        },
+        {
+            'name': 'Usuarios',
+            'description': 'Comprende todos los endpoints que gestionan todas las funcionalidades relacionadas con un usuario de la plataforma.'
         }
     ],
     'SERVE_INCLUDE_SCHEMA': False,
