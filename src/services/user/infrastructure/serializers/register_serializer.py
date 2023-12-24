@@ -1,3 +1,4 @@
+from typing import Dict
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth import get_user_model
@@ -88,10 +89,12 @@ class CreateUserSerializer(ErrorMessages):
             )
         return value
 
-    def validate_confirm_password(self, value: str) -> str:
-        if not value == self.initial_data['password']:
+    def validate(self, data: Dict[str, str]) -> Dict[str, str]:
+        password = data['password']
+        confirm_password = data['confirm_password']
+        if not password == confirm_password:
             raise serializers.ValidationError(
                 detail='Las contraseñas no coinciden.',
                 code='Invalid_data'
             )
-        return value
+        return data
