@@ -32,7 +32,8 @@ class RegisterUser:
         Tries to insert the user data into the repository.
         """
 
-        del data['confirm_password']
+        if data.get('confirm_password', None):
+            del data['confirm_password']
         try:
             self.__repository.insert(data)
         except self.__repository.UserRepositoryError as e:
