@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from services.user.infrastructure.serializers import CreateUserSerializer
 from services.user.application import RegisterUser
+from services.user.schemas import register_user_schema
 
 
 class RegisterUserAPIView(generics.GenericAPIView):
@@ -47,6 +48,7 @@ class RegisterUserAPIView(generics.GenericAPIView):
             content_type='application/json',
         )
 
+    @register_user_schema
     def post(self, request: Request, *args, **kwargs) -> Response:
         request_data = self.serializer_class(data=request.data)
         if request_data.is_valid():
