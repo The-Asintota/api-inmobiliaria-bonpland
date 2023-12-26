@@ -1,1 +1,2 @@
 from .register_view_schema import register_user_schema
+from .auth_view_schema import user_auth_schema

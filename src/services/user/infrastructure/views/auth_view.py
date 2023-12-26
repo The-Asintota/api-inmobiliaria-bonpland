@@ -5,6 +5,7 @@ from rest_framework.request import Request
 from rest_framework_simplejwt.views import TokenObtainPairView
 from services.user.infrastructure.serializers import AuthUserSerializer
 from services.user.application import UserAuthentication
+from services.user.schemas import user_auth_schema
 
 
 class UserAuthAPIView(TokenObtainPairView):
@@ -51,6 +52,7 @@ class UserAuthAPIView(TokenObtainPairView):
             content_type='application/json',
         )
 
+    @user_auth_schema
     def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
