@@ -286,6 +286,103 @@ paths:
             (INTERNAL_SERVER_ERROR) Ocurrió un error al intentar intertar guardar el usuario en la base de datos, este error puede ser causado por las siguientes razones:
             1. Fallo en la conexión con la base de datos.
             2. El servidor no tiene los permisos necesarios para guardar el usuario.
+  /api/v1/user/auth/:
+    post:
+      operationId: api_v1_user_auth_create
+      description: Autenticar a los usuarios con sus credenciales _correo electrónico_
+        y _contraseña_.
+      tags:
+      - Usuarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                  maxLength: 100
+                  nullable: false
+                  pattern: ^([A-Za-z0-9]+[-_.])*[A-Za-z0-9]+@[A-Za-z]+(\.[A-Z|a-z]{2,4}){1,2}$
+                  example: correo@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 30
+                  nullable: false
+                  example: Aaa1234567890
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  access:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY4MzIxNjU3NiwiaWF0IjoxNjgzMTMwMTc2LCJqdGkiOiI5NWJmOTE4ZmRiNjc0Y2ExYjVjNWRhMGE2OWZlYmE1MiIsInVzZXJfaWQiOjF9.PZPJ8kO-eO2Gyqr3COlVcw1n-55xWYNOgxpgorou5xE
+                  refresh:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY4MzIxNjU3NiwiaWF0IjoxNjgzMTMwMTc2LCJqdGkiOiI5NWJmOTE4ZmRiNjc0Y2ExYjVjNWRhMGE2OWZlYmE1MiIsInVzZXJfaWQiOjF9.PZPJ8kO-eO2Gyqr3COlVcw1n-55xWYNOgxpgorou5xE
+          description: (OK) La autenticación se completo con éxito, se crean los JWT
+            para el usuario.
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  detail:
+                    type: string
+                    example: No active account found with the given credentials
+          description: (UNAUTHORIZED) Las credenciales del usuario son inválidas o
+            no existe un usuario con esas credenciales.
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code_error:
+                    type: string
+                    example: invalid_data
+                  details:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                        - Correo electrónico inválido.
+                      password:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                        - El valor ingresado debe ser de al menos 8 caracteres.
+          description: |
+            (BAD_REQUEST)  Los datos de la petición son inválidos, se retorna el/los mensajes de error por cada campo del formulario que no paso las validaciones:
+            1. Campo email:
+              - **Correo electrónico inválido:** el correo electrónico debe tener una estructura válida, los siguientes ejemplos se consideran correos inválidos.
+                - correo@.com
+                - correo@[cualquier-número-simbolo].com
+                - correo.com
+                - correo@
+                - correo@example.[cualquier-número-simbolo]
+                - @.com
+              - **Este campo es requerido:** el correo electrónico del usuario debe ir en el cuerpo de la petición.
+              - **Este campo no puede estar en blanco:** no se admiten valores vacíos ("") para este campo.
+              - **Este correo electrónico ya está en uso:** no se admiten correos electrónicos duplicados en la base de datos.
+              - **El valor ingresado supera el número máximo de caracteres permitidos:** el máximo de caracteres permitido para este campo es de 90.
+            2. campo password:
+              - **El valor ingresado debe ser de al menos 8 caracteres:** la contraseña debe ser de al menos 8 caracteres para ser considerada una contraseña segura.
+              - **Este campo es requerido:** la contraseña del usuario debe ir en el cuerpo de la petición.
+              - **Este campo no puede estar en blanco:** no se admiten valores vacíos ("") para este campo.
+        '500':
+          description: |-
+            (INTERNAL_SERVER_ERROR) Ocurrió un error al intentar intertar guardar el usuario en la base de datos, este error puede ser causado por las siguientes razones:
+            1. Fallo en la conexión con la base de datos.
+            2. El servidor no tiene los permisos necesarios para guardar el usuario.
 components:
   schemas:
     PaginatedPropertiesList:
